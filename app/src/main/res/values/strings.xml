@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Sutori</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="email_should_not_be_empty" >Email should not be empty</string>
+    <string name="password_should_not_be_empty" >Password should not be empty</string>
+    <string name="name" >Name</string>
+    <string name="email" >Email</string>
+    <string name="password" >Password</string>
+    <string name="log_in" >Log in</string>
+    <string name="sign_up" >Sign up</string>
+    <string name="story_not_found" >Story not found</string>
+    <string name="log_out" >Log out</string>
+    <string name="add_story" >Add story</string>
+    <string name="camera" >Camera</string>
+    <string name="gallery" >Gallery</string>
+    <string name="description" >Description</string>
+    <string name="take_picture" >Take picture</string>
+    <string name="switch_camera" >Switch camera</string>
+    <string name="sutori_logo_image" >Sutori logo image</string>
+    <string name="preview_image" >Preview image</string>
+    <string name="story_image" >Story image</string>
+    <string name="upload" >Upload</string>
+    <string name="user_name" >User Name</string>
+    <string name="story_thumbnail">Story thumbnail</string>
+    <string name="password_6_chars">Password must have at least 6 characters.</string>
+    <string name="email_not_valid">Email not valid.</string>
+    <string name="name_should_not_be_empty" >Name should not be empty</string>
+</resources>
