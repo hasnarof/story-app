@@ -1,9 +1,7 @@
 package com.hasnarof.storyapp.data.remote.retrofit
 
-import com.hasnarof.storyapp.data.remote.response.LoginResponse
-import com.hasnarof.storyapp.data.remote.response.RegisterResponse
-import com.hasnarof.storyapp.data.remote.response.StoriesResponse
-import com.hasnarof.storyapp.data.remote.response.StoryAddResponse
+import com.hasnarof.storyapp.data.remote.response.*
+import com.hasnarof.storyapp.domain.model.Story
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -26,9 +24,11 @@ interface ApiService {
     ): Call<LoginResponse>
 
     @GET("stories")
-    fun stories(
+    suspend fun getStories(
         @Header("Authorization") token: String,
-    ): Call<StoriesResponse>
+        @Query("page") page: Int,
+        @Query("size") size: Int
+    ): StoriesResponse
 
     @Multipart
     @POST("stories")

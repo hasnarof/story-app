@@ -25,4 +25,5 @@
     <string name="password_6_chars">Password must have at least 6 characters.</string>
     <string name="email_not_valid">Email not valid.</string>
     <string name="name_should_not_be_empty" >Name should not be empty</string>
+    <string name="retry">Try again</string>
 </resources>

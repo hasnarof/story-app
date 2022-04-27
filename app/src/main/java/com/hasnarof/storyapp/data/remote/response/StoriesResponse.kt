@@ -1,11 +1,13 @@
 package com.hasnarof.storyapp.data.remote.response
 
+import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
+import com.hasnarof.storyapp.domain.model.Story
 
 data class StoriesResponse(
 
 	@field:SerializedName("listStory")
-	val listStory: List<ListStoryItem?>,
+	val listStory: List<StoryItem>,
 
 	@field:SerializedName("error")
 	val error: Boolean? = null,
@@ -14,26 +16,12 @@ data class StoriesResponse(
 	val message: String? = null
 )
 
-data class ListStoryItem(
-
-	@field:SerializedName("photoUrl")
-	val photoUrl: String = "",
-
-	@field:SerializedName("createdAt")
-	val createdAt: String = "",
-
-	@field:SerializedName("name")
-	val name: String = "",
-
-	@field:SerializedName("description")
-	val description: String = "",
-
-	@field:SerializedName("lon")
-	val lon: Double,
-
-	@field:SerializedName("id")
-	val id: String = "",
-
-	@field:SerializedName("lat")
-	val lat: Double
+data class StoryItem(
+	val photoUrl: String,
+	val createdAt: String,
+	val name: String,
+	val description: String,
+	val lon: Double? = null,
+	val id: String,
+	val lat: Double? = null
 )

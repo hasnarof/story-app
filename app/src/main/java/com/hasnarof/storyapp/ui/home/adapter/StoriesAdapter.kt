@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -12,16 +13,25 @@ import com.hasnarof.storyapp.domain.model.Story
 import com.hasnarof.storyapp.helper.StoryDiffCallback
 import com.hasnarof.storyapp.ui.home.HomeFragmentDirections
 
-class StoriesAdapter: RecyclerView.Adapter<StoriesAdapter.StoryViewHolder>() {
+class StoriesAdapter: PagingDataAdapter<Story, StoriesAdapter.StoryViewHolder>(DIFF_CALLBACK) {
 
-    private val stories = ArrayList<Story>()
+    inner class StoryViewHolder(val binding: ItemRowStoryBinding): RecyclerView.ViewHolder(binding.root) {
+        fun bind(data: Story) {
+            Glide.with(itemView.context).load(data.photoUrl).into(binding.imageStory)
+            binding.tvUserName.text = data.name
 
-    fun setStories(stories: List<Story>) {
-        val diffCallback = StoryDiffCallback(this.stories, stories)
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
-        this.stories.clear()
-        this.stories.addAll(stories)
-        diffResult.dispatchUpdatesTo(this)
+            binding.imageStory.transitionName = "image${data.id}"
+            binding.tvUserName.transitionName = "name${data.id}"
+
+            binding.cardView.setOnClickListener {
+                val toStoryDetailFragment = HomeFragmentDirections.actionHomeFragmentToStoryDetailFragment(data)
+                val extras = FragmentNavigatorExtras(
+                    binding.imageStory to "image${data.id}",
+                    binding.tvUserName to "name${data.id}"
+                )
+                it.findNavController().navigate(toStoryDetailFragment, extras)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StoriesAdapter.StoryViewHolder {
@@ -30,30 +40,23 @@ class StoriesAdapter: RecyclerView.Adapter<StoriesAdapter.StoryViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: StoriesAdapter.StoryViewHolder, position: Int) {
-        val story = stories[position]
-
-        Glide.with(holder.itemView.context).load(story.photoUrl).into(holder.binding.imageStory)
-        holder.binding.tvUserName.text = story.name
-
-        holder.binding.imageStory.transitionName = "image${stories[position].id}"
-        holder.binding.tvUserName.transitionName = "name${stories[position].id}"
-
-        holder.binding.cardView.setOnClickListener {
-            val toStoryDetailFragment = HomeFragmentDirections.actionHomeFragmentToStoryDetailFragment(story)
-            val extras = FragmentNavigatorExtras(
-                holder.binding.imageStory to "image${stories[position].id}",
-                holder.binding.tvUserName to "name${stories[position].id}"
-            )
-            it.findNavController().navigate(toStoryDetailFragment, extras)
+        val data = getItem(position)
+        if(data != null) {
+            holder.bind(data)
         }
     }
 
-    override fun getItemCount(): Int {
-        return stories.size
+    companion object {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Story>() {
+            override fun areItemsTheSame(oldItem: Story, newItem: Story): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(oldItem: Story, newItem: Story): Boolean {
+                return oldItem.id == newItem.id
+            }
+        }
     }
-
-
-    inner class StoryViewHolder(val binding: ItemRowStoryBinding): RecyclerView.ViewHolder(binding.root)
 
 
 }
