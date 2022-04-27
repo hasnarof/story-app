@@ -18,7 +18,17 @@ class HomeViewModel (
     private val authRepository: AuthRepository
     ) : ViewModel() {
 
-    val user: LiveData<LoginResult> = authRepository.getCurrentUser()
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _message = MutableLiveData<String>()
+    val message: LiveData<String> = _message
+
+    companion object {
+        private const val TAG = "HomeViewModel"
+    }
+
+    val user: LiveData<LoginResult> = authRepository.getCurrentUser().asLiveData()
 
     fun getStories(token: String): LiveData<PagingData<Story>> =
         storyRepository.getStory("Bearer $token")
@@ -29,9 +39,7 @@ class HomeViewModel (
         }
     }
 
-    companion object {
-        private const val TAG = "HomeViewModel"
-    }
+
 }
 
 class HomeViewModelFactory (private val context: Context) : ViewModelProvider.Factory {

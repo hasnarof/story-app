@@ -1,21 +1,14 @@
 package com.hasnarof.storyapp.ui.home
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
-import androidx.core.view.doOnPreDraw
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hasnarof.storyapp.R
-import com.hasnarof.storyapp.data.preferences.AuthPreferences
 import com.hasnarof.storyapp.databinding.FragmentHomeBinding
 import com.hasnarof.storyapp.ui.home.adapter.LoadingStateAdapter
 import com.hasnarof.storyapp.ui.home.adapter.StoriesAdapter
@@ -54,18 +47,28 @@ class HomeFragment : Fragment() {
                 storiesAdapter.retry()
             }
         )
+
+        storiesAdapter.addLoadStateListener { loadState ->
+            if ( loadState.append.endOfPaginationReached ) {
+                if ( storiesAdapter.itemCount < 1) {
+                    binding?.tvNotFound?.visibility = View.VISIBLE
+                    binding?.rvStories?.visibility = View.GONE
+                } else {
+                    binding?.tvNotFound?.visibility = View.GONE
+                    binding?.rvStories?.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
     private fun setObserver() {
-        postponeEnterTransition()
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            binding?.progressBar?.visibility = if (it) View.VISIBLE else View.GONE
+        }
 
-//        viewModel.isLoading.observe(viewLifecycleOwner) {
-//            binding?.progressBar?.visibility = if (it) View.VISIBLE else View.GONE
-//        }
-//
-//        viewModel.message.observe(viewLifecycleOwner) {
-//            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-//        }
+        viewModel.message.observe(viewLifecycleOwner) {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
 
         viewModel.user.observe(viewLifecycleOwner) {
             viewModel.getStories(it.token).observe(viewLifecycleOwner) {
@@ -89,7 +92,6 @@ class HomeFragment : Fragment() {
                 item.onNavDestinationSelected(findNavController()) || super.onOptionsItemSelected(item)
             }
         }
-
     }
 
     override fun onDestroy() {

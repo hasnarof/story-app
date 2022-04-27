@@ -15,6 +15,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.hasnarof.storyapp.R
 import com.hasnarof.storyapp.data.preferences.AuthPreferences
+import com.hasnarof.storyapp.data.Result
+import com.hasnarof.storyapp.data.remote.response.LoginResponse
 import com.hasnarof.storyapp.databinding.FragmentLoginBinding
 
 
@@ -25,7 +27,7 @@ class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding
     private val viewModel: LoginViewModel by viewModels {
-        LoginViewModelFactory(AuthPreferences.getInstance(context?.dataStore as DataStore<Preferences>))
+        LoginViewModelFactory(requireActivity())
     }
 
     override fun onCreateView(

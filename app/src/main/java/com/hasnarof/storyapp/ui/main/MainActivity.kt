@@ -18,18 +18,14 @@ import com.hasnarof.storyapp.R
 import com.hasnarof.storyapp.data.preferences.AuthPreferences
 import com.hasnarof.storyapp.databinding.ActivityMainBinding
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "auth")
-
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels {
-        MainViewModelFactory(
-            AuthPreferences.getInstance(dataStore)
-        )
+        MainViewModelFactory(this)
     }
 
     private lateinit var navController: NavController
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_container) as NavHostFragment
         navController = navHostFragment.navController
-        val appBarConfiguration = AppBarConfiguration(navController.graph)
+        appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         viewModel.getCurrentUser().observe(this) {
