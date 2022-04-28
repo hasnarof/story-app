@@ -1,19 +1,21 @@
 package com.hasnarof.storyapp.ui.story.add
 
 import android.Manifest
-import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_GET_CONTENT
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -24,6 +26,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.hasnarof.storyapp.R
 import com.hasnarof.storyapp.data.preferences.AuthPreferences
 import com.hasnarof.storyapp.databinding.FragmentStoryAddBinding
@@ -38,6 +42,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
+
 private val Context.dataStore : DataStore<Preferences> by preferencesDataStore(name = "auth")
 
 class StoryAddFragment : Fragment() {
@@ -48,10 +53,20 @@ class StoryAddFragment : Fragment() {
         StoryAddViewModelFactory(AuthPreferences.getInstance(context?.dataStore as DataStore<Preferences>))
     }
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var getFile: File? = null
     private var token: String = ""
+    private var location: Location? = null
+
+    private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
+    private var isLocationFinePermissionGranted = false
+    private var isLocationCoarsePermissionGranted = false
+    private var isCameraPermissionGranted = false
+
+    private val MY_PERMISSIONS_REQUEST_CODE = 123
 
     companion object {
+        private const val TAG = "StoryAddFragment"
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
         private const val REQUEST_CODE_PERMISSIONS = 10
     }
@@ -61,15 +76,27 @@ class StoryAddFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentStoryAddBinding.inflate(layoutInflater)
-
-        setPermission()
-
         return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){ permissions ->
+
+            isLocationFinePermissionGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: isLocationFinePermissionGranted
+            isLocationCoarsePermissionGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: isLocationCoarsePermissionGranted
+            isCameraPermissionGranted = permissions[Manifest.permission.CAMERA] ?: isCameraPermissionGranted
+
+            if(isLocationFinePermissionGranted || isLocationCoarsePermissionGranted) getMyLastLocation()
+
+        }
+
+        requestPermission()
+//        setPermissionCamera()
+//        getMyLastLocation()
         setListenerFromCamera()
         setObserver()
         setAction()
@@ -107,35 +134,27 @@ class StoryAddFragment : Fragment() {
         }
     }
 
-    private fun setPermission() {
-        if (!allPermissionsGranted()) {
-            ActivityCompat.requestPermissions(
-                activity as Activity,
-                REQUIRED_PERMISSIONS,
-                REQUEST_CODE_PERMISSIONS
-            )
+    private fun getMyLastLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+                fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                    if (location != null) {
+                        this.location = location
+                    } else {
+                        Toast.makeText(context, "Location is not found. Try Again", Toast.LENGTH_SHORT)
+                            .show()
+                        findNavController().navigateUp()
+                    }
+                }
+        } else {
+            requestPermission()
         }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (!allPermissionsGranted()) {
-                Toast.makeText(
-                    activity,
-                    "Couldn't get permission.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
-
-    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(activity as Context, it) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun startCamera() {
@@ -183,7 +202,14 @@ class StoryAddFragment : Fragment() {
                 Toast.makeText(requireActivity(), "Please insert image.", Toast.LENGTH_SHORT).show()
             }
             description.isEmpty() -> {
-                Toast.makeText(requireActivity(), "Please insert description.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), "Please insert description.", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            location == null -> {
+                Toast.makeText(requireActivity(), "Location not found.", Toast.LENGTH_SHORT).show()
+//                Log.d(TAG, "${isLocationFinePermissionGranted.toString()} ${isLocationCoarsePermissionGranted.toString()} ${isCameraPermissionGranted.toString()}")
+//                requestPermission()
+                getMyLastLocation()
             }
             else -> {
                 val file = reduceFileImage(getFile as File)
@@ -195,15 +221,63 @@ class StoryAddFragment : Fragment() {
                     file.name,
                     requestImageFile
                 )
+                val lat = location?.latitude.toString().toRequestBody("text/plain".toMediaType())
+                val lon = location?.longitude.toString().toRequestBody("text/plain".toMediaType())
 
-                viewModel.uploadImage(token, imageMultipart, description)
+                viewModel.uploadImage(token, imageMultipart, description, lat, lon)
+
             }
+        }
+    }
+
+    private fun requestPermission(){
+
+        isLocationFinePermissionGranted = ContextCompat.checkSelfPermission(
+            requireActivity(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        isLocationCoarsePermissionGranted = ContextCompat.checkSelfPermission(
+            requireActivity(),
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        isCameraPermissionGranted = ContextCompat.checkSelfPermission(
+            requireActivity(),
+            Manifest.permission.RECORD_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
+
+//        Log.d(TAG, "${isLocationFinePermissionGranted.toString()} ${isLocationCoarsePermissionGranted.toString()} ${isCameraPermissionGranted.toString()}")
+
+        val permissionRequests : MutableList<String> = ArrayList()
+
+        if (!isLocationFinePermissionGranted){
+            permissionRequests.add(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+
+        if (!isLocationCoarsePermissionGranted){
+            permissionRequests.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
+
+        if (!isCameraPermissionGranted){
+            permissionRequests.add(Manifest.permission.CAMERA)
+        }
+
+        if (permissionRequests.isNotEmpty()){
+            permissionLauncher.launch(permissionRequests.toTypedArray())
         }
     }
 
     override fun onResume() {
         super.onResume()
         (activity as MainActivity).showSystemUI()
+        requestPermission()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
 
 }

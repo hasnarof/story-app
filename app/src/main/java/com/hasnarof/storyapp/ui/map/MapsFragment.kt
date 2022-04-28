@@ -60,8 +60,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         mMap = googleMap
 
         try {
-            // Customise the styling of the base map using a JSON object defined
-            // in a raw resource file.
             val success = mMap.setMapStyle(
                 MapStyleOptions.loadRawResourceStyle(
                     requireActivity(), R.raw.map_style)
@@ -107,7 +105,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 bounds.include(position)
             }
 
-            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 200))
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 64))
         }
     }
 

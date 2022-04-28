@@ -24,9 +24,9 @@ class StoryAddViewModel(private val pref: AuthPreferences) : ViewModel() {
     private val _isSuccessUpload = MutableLiveData<Boolean>()
     val isSuccessUpload: LiveData<Boolean> = _isSuccessUpload
 
-    fun uploadImage(token: String, imageMultipart: MultipartBody.Part, description: RequestBody) {
+    fun uploadImage(token: String, imageMultipart: MultipartBody.Part, description: RequestBody, lat: RequestBody, lon: RequestBody) {
         _isLoading.value = true
-        val service = ApiConfig.getApiService().addStory("Bearer $token", imageMultipart, description)
+        val service = ApiConfig.getApiService().addStory("Bearer $token", imageMultipart, description, lat, lon)
 
         service.enqueue(object : Callback<StoryAddResponse> {
             override fun onResponse(
