@@ -1,26 +1,16 @@
 package com.hasnarof.storyapp.ui.auth.login
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.hasnarof.storyapp.R
-import com.hasnarof.storyapp.data.preferences.AuthPreferences
-import com.hasnarof.storyapp.data.Result
-import com.hasnarof.storyapp.data.remote.response.LoginResponse
 import com.hasnarof.storyapp.databinding.FragmentLoginBinding
-
-
-private val Context.dataStore : DataStore<Preferences> by preferencesDataStore(name = "auth")
 
 class LoginFragment : Fragment() {
 

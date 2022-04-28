@@ -3,6 +3,7 @@ package com.hasnarof.storyapp.ui.home
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -27,12 +28,15 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         _binding = FragmentHomeBinding.inflate(layoutInflater)
+
         return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setHasOptionsMenu(true)
 
         setListAdapter()
@@ -59,6 +63,8 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+
+
     }
 
     private fun setObserver() {

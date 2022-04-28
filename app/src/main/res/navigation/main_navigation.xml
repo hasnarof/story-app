@@ -34,6 +34,9 @@
         <action
             android:id="@+id/action_homeFragment_to_storyAddFragment"
             app:destination="@id/storyAddFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
     </fragment>
     <fragment
         android:id="@+id/storyDetailFragment"
@@ -65,4 +68,9 @@
             android:id="@+id/action_cameraFragment_to_storyAddFragment"
             app:destination="@id/storyAddFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.hasnarof.storyapp.ui.map.MapsFragment"
+        android:label="Locations"
+        tools:layout="@layout/fragment_maps" />
 </navigation>

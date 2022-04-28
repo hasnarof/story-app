@@ -7,6 +7,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.google.gson.Gson
 import com.hasnarof.storyapp.Injection
+import com.hasnarof.storyapp.data.Resource
 import com.hasnarof.storyapp.data.remote.response.LoginResult
 import com.hasnarof.storyapp.data.repository.AuthRepository
 import com.hasnarof.storyapp.data.repository.StoryRepository
@@ -17,6 +18,9 @@ class HomeViewModel (
     private val storyRepository: StoryRepository,
     private val authRepository: AuthRepository
     ) : ViewModel() {
+
+    private val _stories = MutableLiveData<List<Story>>()
+    val stories: LiveData<List<Story>> = _stories
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -31,7 +35,36 @@ class HomeViewModel (
     val user: LiveData<LoginResult> = authRepository.getCurrentUser().asLiveData()
 
     fun getStories(token: String): LiveData<PagingData<Story>> =
-        storyRepository.getStory("Bearer $token")
+        storyRepository.getStory(token)
+
+    fun getStoriesWithLocation(token: String) {
+        _isLoading.value = true
+        viewModelScope.launch {
+            val response = storyRepository.getStoriesWithLocation(token)
+            when(response) {
+                is Resource.Success -> {
+                    val storiesTemp = ArrayList<Story>()
+                    response.data?.listStory?.map {
+                        storiesTemp.add(
+                            Story(it.id, it.name, it.description, it.photoUrl, it.createdAt,
+                                it.lon, it.lat
+                            )
+                        )
+                    }
+
+                    _isLoading.value = false
+                    _stories.value = storiesTemp
+                }
+                is Resource.ResponseError -> {
+                    _isLoading.value = false
+                    _message.value = response.errorResponse?.message ?: "An error occured"
+                } else -> {
+                _isLoading.value = false
+                _message.value = "An error occured"
+            }
+            }
+        }
+    }
 
     fun logout() {
         viewModelScope.launch {

@@ -8,6 +8,11 @@
             app:showAsAction="always"
             android:title="@string/add_story" />
         <item
+            android:id="@+id/mapsFragment"
+            android:icon="@drawable/ic_baseline_location_on_white_24"
+            app:showAsAction="always"
+            android:title="@string/location" />
+        <item
             android:id="@+id/menu_logout"
             android:title="@string/log_out" />
     </group>

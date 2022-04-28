@@ -5,18 +5,21 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.google.gson.Gson
 import com.hasnarof.storyapp.Injection
+import com.hasnarof.storyapp.R
+import com.hasnarof.storyapp.data.Resource
 import com.hasnarof.storyapp.data.preferences.AuthPreferences
 import com.hasnarof.storyapp.data.remote.response.ErrorResponse
 import com.hasnarof.storyapp.data.remote.response.LoginResponse
 import com.hasnarof.storyapp.data.remote.retrofit.ApiConfig
 import com.hasnarof.storyapp.data.repository.AuthRepository
+import com.hasnarof.storyapp.ui.auth.register.RegisterViewModel
 import com.hasnarof.storyapp.ui.home.HomeViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.HttpException
 import retrofit2.Response
 import java.lang.Exception
-
 
 class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
@@ -32,15 +35,20 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     fun login(email: String, password: String) {
         _isLoading.value = true
-        try {
-            viewModelScope.launch {
-                authRepository.login(email, password)
+        viewModelScope.launch {
+            val response = authRepository.login(email, password)
+            when(response) {
+                is Resource.Success -> {
+                    _isLoading.value = false
+                }
+                is Resource.ResponseError -> {
+                    _isLoading.value = false
+                    _message.value = response.errorResponse?.message ?: "An error occured"
+                } else -> {
+                _isLoading.value = false
+                _message.value = "An error occured"
             }
-        } catch (e: Exception) {
-            _message.value = e.localizedMessage
-            Log.e(TAG, "onFailure: ${e.localizedMessage}")
-        } finally {
-            _isLoading.value = true
+            }
         }
     }
 }

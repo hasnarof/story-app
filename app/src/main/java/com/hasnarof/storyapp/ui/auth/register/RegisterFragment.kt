@@ -1,6 +1,7 @@
 package com.hasnarof.storyapp.ui.auth.register
 
 import android.os.Bundle
+import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,13 +11,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.hasnarof.storyapp.R
+import com.hasnarof.storyapp.data.Resource
+import com.hasnarof.storyapp.data.remote.response.RegisterResponse
 import com.hasnarof.storyapp.databinding.FragmentRegisterBinding
 
 class RegisterFragment : Fragment() {
 
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding
-    private val viewModel by viewModels<RegisterViewModel>()
+    private val viewModel: RegisterViewModel by viewModels {
+        RegisterViewModelFactory(requireActivity())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

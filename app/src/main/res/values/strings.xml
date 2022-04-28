@@ -26,4 +26,7 @@
     <string name="email_not_valid">Email not valid.</string>
     <string name="name_should_not_be_empty" >Name should not be empty</string>
     <string name="retry">Try again</string>
+    <string name="something_wrong">Something went wrong.</string>
+    <string name="location">Location</string>
+    <string name="no_location">There is no location</string>
 </resources>

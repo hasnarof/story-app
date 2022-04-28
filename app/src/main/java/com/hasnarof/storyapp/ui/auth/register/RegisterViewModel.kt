@@ -1,18 +1,13 @@
 package com.hasnarof.storyapp.ui.auth.register
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.google.gson.Gson
-import com.hasnarof.storyapp.data.remote.response.ErrorResponse
-import com.hasnarof.storyapp.data.remote.response.RegisterResponse
-import com.hasnarof.storyapp.data.remote.retrofit.ApiConfig
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import android.content.Context
+import androidx.lifecycle.*
+import com.hasnarof.storyapp.Injection
+import com.hasnarof.storyapp.data.Resource
+import com.hasnarof.storyapp.data.repository.AuthRepository
+import kotlinx.coroutines.launch
 
-class RegisterViewModel : ViewModel() {
+class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -25,32 +20,64 @@ class RegisterViewModel : ViewModel() {
     companion object {
         private const val TAG = "RegisterViewModel"
     }
-    
+
     fun register(name: String, email: String, password: String) {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().register(name, email, password)
-        client.enqueue(object: Callback<RegisterResponse> {
-            override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _isSuccessRegister.value = true
-
+        viewModelScope.launch {
+            val response = authRepository.register(name, email, password)
+            when(response) {
+                is Resource.Success -> {
+                    _isLoading.value = false
                     _message.value = "Success register"
-                } else {
-                    val errorResponse: ErrorResponse? = Gson().fromJson(response.errorBody()?.charStream(), ErrorResponse::class.java)
-                    val errorMessage = errorResponse?.message ?: "Unknown Error"
-
-                    _message.value = errorMessage
-                    Log.e(TAG, "onFailure: $errorMessage")
+                    _isSuccessRegister.value = true
                 }
-
+                is Resource.ResponseError -> {
+                    _isLoading.value = false
+                    _message.value = response.errorResponse?.message ?: "An error occured"
+                } else -> {
+                    _isLoading.value = false
+                    _message.value = "An error occured"
+                }
             }
+        }
 
-            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                _isLoading.value = false
-                _message.value = "There is an error. Please try again later."
-            }
+    }
 
-        })
+//        _isLoading.value = true
+//        viewModelScope.launch {
+//            try {
+//
+//                Log.e(TAG, response.toString())
+//
+//                _message.value = "Success register"
+////                _isSuccessRegister.value = true
+//            } catch (httpEx: HttpException) {
+//                val errorResponse: ErrorResponse? = Gson().fromJson(httpEx.response()?.errorBody()?.charStream(), ErrorResponse::class.java)
+//                val errorMessage = errorResponse?.message ?: "Something went wrong."
+//
+//                _message.value = errorMessage
+//                Log.e(TAG, "onFailure: $errorMessage")
+//            } catch (ex: Exception) {
+//                val errorResponse = ex.message
+//                val errorMessage = errorResponse ?: "Something went wrong."
+//
+//                _message.value = errorMessage
+//                Log.e(TAG, "onFailure: $errorMessage")
+//            } finally {
+//                _isLoading.value = false
+//            }
+//        }
+}
+
+class RegisterViewModelFactory (private val context: Context) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(RegisterViewModel::class.java)) {
+            return RegisterViewModel(
+                Injection.provideAuthRepository(context)
+            ) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
     }
 }
