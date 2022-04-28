@@ -17,10 +17,6 @@ class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel(
     private val _isSuccessRegister = MutableLiveData<Boolean>()
     val isSuccessRegister: LiveData<Boolean> = _isSuccessRegister
 
-    companion object {
-        private const val TAG = "RegisterViewModel"
-    }
-
     fun register(name: String, email: String, password: String) {
         _isLoading.value = true
         viewModelScope.launch {
@@ -42,31 +38,6 @@ class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel(
         }
 
     }
-
-//        _isLoading.value = true
-//        viewModelScope.launch {
-//            try {
-//
-//                Log.e(TAG, response.toString())
-//
-//                _message.value = "Success register"
-////                _isSuccessRegister.value = true
-//            } catch (httpEx: HttpException) {
-//                val errorResponse: ErrorResponse? = Gson().fromJson(httpEx.response()?.errorBody()?.charStream(), ErrorResponse::class.java)
-//                val errorMessage = errorResponse?.message ?: "Something went wrong."
-//
-//                _message.value = errorMessage
-//                Log.e(TAG, "onFailure: $errorMessage")
-//            } catch (ex: Exception) {
-//                val errorResponse = ex.message
-//                val errorMessage = errorResponse ?: "Something went wrong."
-//
-//                _message.value = errorMessage
-//                Log.e(TAG, "onFailure: $errorMessage")
-//            } finally {
-//                _isLoading.value = false
-//            }
-//        }
 }
 
 class RegisterViewModelFactory (private val context: Context) : ViewModelProvider.Factory {

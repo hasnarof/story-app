@@ -1,25 +1,11 @@
 package com.hasnarof.storyapp.ui.auth.login
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.*
-import com.google.gson.Gson
 import com.hasnarof.storyapp.Injection
-import com.hasnarof.storyapp.R
 import com.hasnarof.storyapp.data.Resource
-import com.hasnarof.storyapp.data.preferences.AuthPreferences
-import com.hasnarof.storyapp.data.remote.response.ErrorResponse
-import com.hasnarof.storyapp.data.remote.response.LoginResponse
-import com.hasnarof.storyapp.data.remote.retrofit.ApiConfig
 import com.hasnarof.storyapp.data.repository.AuthRepository
-import com.hasnarof.storyapp.ui.auth.register.RegisterViewModel
-import com.hasnarof.storyapp.ui.home.HomeViewModel
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.HttpException
-import retrofit2.Response
-import java.lang.Exception
 
 class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
@@ -28,10 +14,6 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     private val _message = MutableLiveData<String>()
     val message: LiveData<String> = _message
-
-    companion object {
-        private const val TAG = "LoginViewModel"
-    }
 
     fun login(email: String, password: String) {
         _isLoading.value = true
@@ -51,6 +33,8 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
             }
         }
     }
+
+    companion object
 }
 
 class LoginViewModelFactory (private val context: Context) : ViewModelProvider.Factory {

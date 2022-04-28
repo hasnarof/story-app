@@ -65,7 +65,7 @@ class CameraFragment : Fragment() {
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
             } catch (exc: Exception) {
-                Toast.makeText(requireActivity(), "Failed showing camera.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), getString(R.string.failed_showing_camera), Toast.LENGTH_SHORT).show()
             }
          }, ContextCompat.getMainExecutor(requireActivity()))
 
@@ -83,7 +83,7 @@ class CameraFragment : Fragment() {
             ContextCompat.getMainExecutor(requireActivity()),
             object: ImageCapture.OnImageSavedCallback {
                 override fun onError(exception: ImageCaptureException) {
-                    Toast.makeText(requireActivity(), "Fail to take picture.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireActivity(), getString(R.string.fail_to_take_picture), Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {

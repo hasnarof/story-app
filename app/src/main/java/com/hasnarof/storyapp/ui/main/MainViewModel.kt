@@ -6,10 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import com.hasnarof.storyapp.Injection
-import com.hasnarof.storyapp.data.preferences.AuthPreferences
 import com.hasnarof.storyapp.data.remote.response.LoginResult
 import com.hasnarof.storyapp.data.repository.AuthRepository
-import com.hasnarof.storyapp.ui.home.HomeViewModel
 
 class MainViewModel(private val authRepository: AuthRepository) : ViewModel() {
     fun getCurrentUser(): LiveData<LoginResult> {

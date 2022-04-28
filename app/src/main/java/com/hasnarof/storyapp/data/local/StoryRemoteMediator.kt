@@ -9,7 +9,6 @@ import com.hasnarof.storyapp.data.database.RemoteKeys
 import com.hasnarof.storyapp.data.database.StoryDatabase
 import com.hasnarof.storyapp.data.remote.retrofit.ApiService
 import com.hasnarof.storyapp.domain.model.Story
-import java.lang.Exception
 
 @OptIn(ExperimentalPagingApi::class)
 class StoryRemoteMediator(

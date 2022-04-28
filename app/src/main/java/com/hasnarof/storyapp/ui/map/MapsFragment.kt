@@ -33,10 +33,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         HomeViewModelFactory(requireActivity())
     }
 
-    companion object {
-        private const val TAG = "MapsFragment"
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,7 +49,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         mapFragment?.getMapAsync(this)
 
         setObserver()
-
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -65,10 +60,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                     requireActivity(), R.raw.map_style)
                 )
             if (!success) {
-                Log.e(TAG, "Style parsing failed.")
+                Log.d(TAG, "Style parsing failed.")
             }
         } catch (e: Resources.NotFoundException) {
-            Log.e(TAG, "Can't find style. Error: ", e)
+            Log.d(TAG, "Can't find style. Error: ", e)
         }
 
     }
@@ -107,6 +102,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
             mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 64))
         }
+    }
+
+    companion object {
+        private const val TAG = "MapsFragment"
     }
 
 }

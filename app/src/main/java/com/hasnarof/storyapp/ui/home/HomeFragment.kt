@@ -39,6 +39,8 @@ class HomeFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
+        postponeEnterTransition()
+
         setListAdapter()
         setObserver()
     }
@@ -46,11 +48,6 @@ class HomeFragment : Fragment() {
     private fun setListAdapter() {
         storiesAdapter = StoriesAdapter()
         binding?.rvStories?.layoutManager = LinearLayoutManager(activity)
-        binding?.rvStories?.adapter = storiesAdapter.withLoadStateFooter(
-            footer = LoadingStateAdapter {
-                storiesAdapter.retry()
-            }
-        )
 
         storiesAdapter.addLoadStateListener { loadState ->
             if ( loadState.append.endOfPaginationReached ) {
@@ -64,7 +61,13 @@ class HomeFragment : Fragment() {
             }
         }
 
-
+        binding?.rvStories?.apply {
+            this.adapter = storiesAdapter.withLoadStateFooter(
+                footer = LoadingStateAdapter {
+                    storiesAdapter.retry()
+                }
+            )
+        }
     }
 
     private fun setObserver() {
@@ -76,9 +79,13 @@ class HomeFragment : Fragment() {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
 
-        viewModel.user.observe(viewLifecycleOwner) {
+        viewModel.user.observe(viewLifecycleOwner) { it ->
             viewModel.getStories(it.token).observe(viewLifecycleOwner) {
                 storiesAdapter.submitData(lifecycle, it)
+
+                (view?.parent as? ViewGroup)?.doOnPreDraw {
+                    startPostponedEnterTransition()
+                }
             }
         }
     }
@@ -104,7 +111,5 @@ class HomeFragment : Fragment() {
         super.onDestroy()
         _binding = null
     }
-
-
 
 }

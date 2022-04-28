@@ -29,6 +29,7 @@
         android:textStyle="bold|italic"
         android:textAllCaps="true"
         android:textSize="30sp"
+        android:alpha="0"
         />
 
     <TextView
@@ -42,6 +43,7 @@
         android:layout_marginTop="15dp"
         android:paddingBottom="5dp"
         android:textStyle="bold"
+        android:alpha="0"
         />
 
     <com.hasnarof.storyapp.view.CustomEditText
@@ -56,6 +58,7 @@
         android:drawableStart="@drawable/ic_baseline_person_24"
         android:drawablePadding="8dp"
         android:padding="10dp"
+        android:alpha="0"
         />
 
     <TextView
@@ -69,6 +72,7 @@
         android:layout_marginTop="15dp"
         android:paddingBottom="5dp"
         android:textStyle="bold"
+        android:alpha="0"
         />
 
     <com.hasnarof.storyapp.view.CustomEditText
@@ -83,6 +87,7 @@
         android:drawableStart="@drawable/ic_baseline_email_24"
         android:drawablePadding="8dp"
         android:padding="10dp"
+        android:alpha="0"
         />
 
     <TextView
@@ -96,6 +101,7 @@
         android:layout_marginTop="15dp"
         android:paddingBottom="5dp"
         android:textStyle="bold"
+        android:alpha="0"
         />
 
     <com.hasnarof.storyapp.view.CustomEditText
@@ -110,6 +116,7 @@
         android:drawableStart="@drawable/ic_baseline_lock_24"
         android:drawablePadding="8dp"
         android:padding="10dp"
+        android:alpha="0"
         />
 
     <com.google.android.material.button.MaterialButton
@@ -123,6 +130,7 @@
         android:text="@string/sign_up"
         android:backgroundTint="@color/primary_teal"
         app:rippleColor="@color/primary_teal"
+        android:alpha="0"
         />
 
     <com.google.android.material.button.MaterialButton
@@ -134,6 +142,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:text="@string/log_in"
         style="?attr/materialButtonOutlinedStyle"
+        android:alpha="0"
         />
 
     <ProgressBar

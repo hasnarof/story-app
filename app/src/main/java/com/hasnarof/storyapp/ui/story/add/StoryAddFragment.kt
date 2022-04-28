@@ -10,14 +10,11 @@ import android.graphics.BitmapFactory
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -58,19 +55,6 @@ class StoryAddFragment : Fragment() {
     private var token: String = ""
     private var location: Location? = null
 
-    private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
-    private var isLocationFinePermissionGranted = false
-    private var isLocationCoarsePermissionGranted = false
-    private var isCameraPermissionGranted = false
-
-    private val MY_PERMISSIONS_REQUEST_CODE = 123
-
-    companion object {
-        private const val TAG = "StoryAddFragment"
-        private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
-        private const val REQUEST_CODE_PERMISSIONS = 10
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -84,19 +68,8 @@ class StoryAddFragment : Fragment() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){ permissions ->
-
-            isLocationFinePermissionGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: isLocationFinePermissionGranted
-            isLocationCoarsePermissionGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: isLocationCoarsePermissionGranted
-            isCameraPermissionGranted = permissions[Manifest.permission.CAMERA] ?: isCameraPermissionGranted
-
-            if(isLocationFinePermissionGranted || isLocationCoarsePermissionGranted) getMyLastLocation()
-
-        }
-
-        requestPermission()
-//        setPermissionCamera()
-//        getMyLastLocation()
+        setCameraPermission()
+        getMyLastLocation()
         setListenerFromCamera()
         setObserver()
         setAction()
@@ -135,25 +108,62 @@ class StoryAddFragment : Fragment() {
     }
 
     private fun getMyLastLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
+        if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
+            checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
         ) {
-                fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                    if (location != null) {
-                        this.location = location
-                    } else {
-                        Toast.makeText(context, "Location is not found. Try Again", Toast.LENGTH_SHORT)
-                            .show()
-                        findNavController().navigateUp()
-                    }
+            fusedLocationClient.lastLocation.addOnSuccessListener { loc: Location? ->
+                if (loc != null) {
+                    location = loc
+                } else {
+                    Toast.makeText(context, "Location is not found. Try Again", Toast.LENGTH_SHORT)
+                        .show()
+                    findNavController().navigateUp()
                 }
+            }
         } else {
-            requestPermission()
+            requestPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
+    }
+
+    private fun setCameraPermission() {
+        if (!checkPermission(Manifest.permission.CAMERA)) {
+            requestPermissionLauncher.launch(arrayOf(Manifest.permission.CAMERA))
+        }
+    }
+
+    private fun checkPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireActivity(),
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        when {
+            permissions[Manifest.permission.CAMERA] == true -> {
+                println(getString(R.string.camera_permission_granted))
+            }
+            permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false -> {
+                getMyLastLocation()
+            }
+            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
+                getMyLastLocation()
+            }
+            else -> {
+                Toast.makeText(
+                    activity,
+                    getString(R.string.couldnt_get_permission),
+                    Toast.LENGTH_SHORT
+                ).show()
+                activity?.finish()
+            }
         }
     }
 
@@ -207,9 +217,7 @@ class StoryAddFragment : Fragment() {
             }
             location == null -> {
                 Toast.makeText(requireActivity(), "Location not found.", Toast.LENGTH_SHORT).show()
-//                Log.d(TAG, "${isLocationFinePermissionGranted.toString()} ${isLocationCoarsePermissionGranted.toString()} ${isCameraPermissionGranted.toString()}")
-//                requestPermission()
-                getMyLastLocation()
+                findNavController().navigateUp()
             }
             else -> {
                 val file = reduceFileImage(getFile as File)
@@ -230,54 +238,14 @@ class StoryAddFragment : Fragment() {
         }
     }
 
-    private fun requestPermission(){
-
-        isLocationFinePermissionGranted = ContextCompat.checkSelfPermission(
-            requireActivity(),
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        isLocationCoarsePermissionGranted = ContextCompat.checkSelfPermission(
-            requireActivity(),
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        isCameraPermissionGranted = ContextCompat.checkSelfPermission(
-            requireActivity(),
-            Manifest.permission.RECORD_AUDIO
-        ) == PackageManager.PERMISSION_GRANTED
-
-//        Log.d(TAG, "${isLocationFinePermissionGranted.toString()} ${isLocationCoarsePermissionGranted.toString()} ${isCameraPermissionGranted.toString()}")
-
-        val permissionRequests : MutableList<String> = ArrayList()
-
-        if (!isLocationFinePermissionGranted){
-            permissionRequests.add(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-
-        if (!isLocationCoarsePermissionGranted){
-            permissionRequests.add(Manifest.permission.ACCESS_COARSE_LOCATION)
-        }
-
-        if (!isCameraPermissionGranted){
-            permissionRequests.add(Manifest.permission.CAMERA)
-        }
-
-        if (permissionRequests.isNotEmpty()){
-            permissionLauncher.launch(permissionRequests.toTypedArray())
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         (activity as MainActivity).showSystemUI()
-        requestPermission()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
-
 
 }

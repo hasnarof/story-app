@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.hasnarof.storyapp.databinding.ItemRowStoryBinding
 import com.hasnarof.storyapp.domain.model.Story
-import com.hasnarof.storyapp.helper.StoryDiffCallback
 import com.hasnarof.storyapp.ui.home.HomeFragmentDirections
 
 class StoriesAdapter: PagingDataAdapter<Story, StoriesAdapter.StoryViewHolder>(DIFF_CALLBACK) {

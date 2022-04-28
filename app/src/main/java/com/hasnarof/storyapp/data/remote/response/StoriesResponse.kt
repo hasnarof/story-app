@@ -1,8 +1,6 @@
 package com.hasnarof.storyapp.data.remote.response
 
-import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
-import com.hasnarof.storyapp.domain.model.Story
 
 data class StoriesResponse(
 

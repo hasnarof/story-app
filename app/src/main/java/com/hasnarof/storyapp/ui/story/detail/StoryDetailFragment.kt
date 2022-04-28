@@ -15,10 +15,6 @@ class StoryDetailFragment : Fragment() {
     private var _binding: FragmentStoryDetailBinding? = null
     private val binding get() = _binding
 
-    companion object {
-        const val EXTRA_STORY = "story"
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,6 +44,10 @@ class StoryDetailFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    companion object {
+        const val EXTRA_STORY = "story"
     }
 
 }

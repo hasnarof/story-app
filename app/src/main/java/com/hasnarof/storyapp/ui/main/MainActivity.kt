@@ -1,22 +1,16 @@
 package com.hasnarof.storyapp.ui.main
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.hasnarof.storyapp.R
-import com.hasnarof.storyapp.data.preferences.AuthPreferences
-import com.hasnarof.storyapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 

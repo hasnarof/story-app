@@ -1,7 +1,8 @@
 package com.hasnarof.storyapp.ui.auth.register
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.os.Bundle
-import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.hasnarof.storyapp.R
-import com.hasnarof.storyapp.data.Resource
-import com.hasnarof.storyapp.data.remote.response.RegisterResponse
 import com.hasnarof.storyapp.databinding.FragmentRegisterBinding
 
 class RegisterFragment : Fragment() {
@@ -36,6 +35,7 @@ class RegisterFragment : Fragment() {
 
         setAction()
         setObserver()
+        setAnimation()
     }
 
     private fun setAction() {
@@ -78,6 +78,28 @@ class RegisterFragment : Fragment() {
             if (it) findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
         }
 
+    }
+
+    private fun setAnimation() {
+        ObjectAnimator.ofFloat(binding?.imageSignup, View.TRANSLATION_X, -30f, 30f).apply {
+            duration = 6000
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+        }.start()
+
+        val title = ObjectAnimator.ofFloat(binding?.title, View.ALPHA, 1f).setDuration(100)
+        val nameTextView = ObjectAnimator.ofFloat(binding?.textLabelName, View.ALPHA, 1f).setDuration(100)
+        val nameEditTextLayout = ObjectAnimator.ofFloat(binding?.textInputName, View.ALPHA, 1f).setDuration(100)
+        val emailTextView = ObjectAnimator.ofFloat(binding?.textLabelEmail, View.ALPHA, 1f).setDuration(100)
+        val emailEditTextLayout = ObjectAnimator.ofFloat(binding?.textInputEmail, View.ALPHA, 1f).setDuration(100)
+        val passwordTextView = ObjectAnimator.ofFloat(binding?.textLabelPassword, View.ALPHA, 1f).setDuration(100)
+        val passwordEditTextLayout = ObjectAnimator.ofFloat(binding?.textInputPassword, View.ALPHA, 1f).setDuration(100)
+        val signup = ObjectAnimator.ofFloat(binding?.buttonSignup, View.ALPHA, 1f).setDuration(100)
+        val login = ObjectAnimator.ofFloat(binding?.buttonLogin, View.ALPHA, 1f).setDuration(100)
+
+        AnimatorSet().apply {
+            playSequentially(title, nameTextView, nameEditTextLayout, emailTextView, emailEditTextLayout, passwordTextView, passwordEditTextLayout, signup, login)
+        }.start()
     }
 
     override fun onResume() {

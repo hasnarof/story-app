@@ -1,5 +1,7 @@
 package com.hasnarof.storyapp.ui.auth.login
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +35,7 @@ class LoginFragment : Fragment() {
 
         setObserver()
         setAction()
+        setAnimation()
     }
 
     private fun setObserver() {
@@ -66,6 +69,26 @@ class LoginFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun setAnimation() {
+        ObjectAnimator.ofFloat(binding?.imageLogin, View.TRANSLATION_X, -30f, 30f).apply {
+            duration = 6000
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+        }.start()
+
+        val title = ObjectAnimator.ofFloat(binding?.title, View.ALPHA, 1f).setDuration(100)
+        val emailTextView = ObjectAnimator.ofFloat(binding?.textLabelEmail, View.ALPHA, 1f).setDuration(100)
+        val emailEditTextLayout = ObjectAnimator.ofFloat(binding?.textInputEmail, View.ALPHA, 1f).setDuration(100)
+        val passwordTextView = ObjectAnimator.ofFloat(binding?.textLabelPassword, View.ALPHA, 1f).setDuration(100)
+        val passwordEditTextLayout = ObjectAnimator.ofFloat(binding?.textInputPassword, View.ALPHA, 1f).setDuration(100)
+        val login = ObjectAnimator.ofFloat(binding?.buttonLogin, View.ALPHA, 1f).setDuration(100)
+        val signup = ObjectAnimator.ofFloat(binding?.buttonSignup, View.ALPHA, 1f).setDuration(100)
+
+        AnimatorSet().apply {
+            playSequentially(title, emailTextView, emailEditTextLayout, passwordTextView, passwordEditTextLayout, login, signup)
+        }.start()
     }
 
     override fun onResume() {

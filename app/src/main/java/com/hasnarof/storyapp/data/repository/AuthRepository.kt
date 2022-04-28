@@ -17,33 +17,33 @@ class AuthRepository(
 ) {
 
     suspend fun register(name: String, email: String, password: String): Resource<RegisterResponse> {
-        try {
+        return try {
             val response = apiService.register(name, email, password)
             if(response.isSuccessful) {
                 val result = response.body()
-                return Resource.Success(result)
+                Resource.Success(result)
             } else {
-                return Resource.ResponseError(getErrorResponse(response.errorBody()!!.string()))
+                Resource.ResponseError(getErrorResponse(response.errorBody()!!.string()))
             }
         } catch (e: Exception) {
             Log.d(TAG, "${e.message}")
-            return Resource.Error(e.message ?: "An error occured")
+            Resource.Error(e.message ?: "An error occured")
         }
     }
 
     suspend fun login(email: String, password: String): Resource<LoginResponse> {
         try {
             val response = apiService.login(email, password)
-            if(response.isSuccessful) {
+            return if(response.isSuccessful) {
                 val result = response.body()
                 pref.setCurrentUser(
                     result?.loginResult?.name ?: "",
                     result?.loginResult?.userId ?: "",
                     result?.loginResult?.token ?: ""
                 )
-                return Resource.Success(result)
+                Resource.Success(result)
             } else {
-                return Resource.ResponseError(getErrorResponse(response.errorBody()!!.string()))
+                Resource.ResponseError(getErrorResponse(response.errorBody()!!.string()))
             }
         } catch (e: Exception) {
             Log.d(TAG, "${e.message}")

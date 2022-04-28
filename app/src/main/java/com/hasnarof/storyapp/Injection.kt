@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.room.Dao
 import com.hasnarof.storyapp.data.database.StoryDatabase
 import com.hasnarof.storyapp.data.preferences.AuthPreferences
 import com.hasnarof.storyapp.data.remote.retrofit.ApiConfig

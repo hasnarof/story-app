@@ -1,7 +1,9 @@
 package com.hasnarof.storyapp.data.remote.retrofit
 
-import com.hasnarof.storyapp.data.remote.response.*
-import com.hasnarof.storyapp.domain.model.Story
+import com.hasnarof.storyapp.data.remote.response.LoginResponse
+import com.hasnarof.storyapp.data.remote.response.RegisterResponse
+import com.hasnarof.storyapp.data.remote.response.StoriesResponse
+import com.hasnarof.storyapp.data.remote.response.StoryAddResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call

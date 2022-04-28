@@ -5,12 +5,12 @@
         <item
             android:id="@+id/storyAddFragment"
             android:icon="@drawable/ic_baseline_add_a_photo_white_24"
-            app:showAsAction="always"
+            app:showAsAction="ifRoom"
             android:title="@string/add_story" />
         <item
             android:id="@+id/mapsFragment"
             android:icon="@drawable/ic_baseline_location_on_white_24"
-            app:showAsAction="always"
+            app:showAsAction="ifRoom"
             android:title="@string/location" />
         <item
             android:id="@+id/menu_logout"

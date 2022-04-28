@@ -1,11 +1,8 @@
 package com.hasnarof.storyapp.ui.home
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
-import com.google.gson.Gson
 import com.hasnarof.storyapp.Injection
 import com.hasnarof.storyapp.data.Resource
 import com.hasnarof.storyapp.data.remote.response.LoginResult
@@ -27,10 +24,6 @@ class HomeViewModel (
 
     private val _message = MutableLiveData<String>()
     val message: LiveData<String> = _message
-
-    companion object {
-        private const val TAG = "HomeViewModel"
-    }
 
     val user: LiveData<LoginResult> = authRepository.getCurrentUser().asLiveData()
 
@@ -71,6 +64,8 @@ class HomeViewModel (
             authRepository.logout()
         }
     }
+
+    companion object
 
 
 }
