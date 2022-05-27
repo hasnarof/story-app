@@ -27,4 +27,7 @@
     <string name="no_location">Tidak ada lokasi</string>
     <string name="location">Lokasi</string>
     <string name="something_wrong">Ada sesuatu yang salah</string>
+    <string name="take_location">Ambil Lokasi</string>
+    <string name="location_found">Lokasi ditemukan</string>
+    <string name="location_not_found">Lokasi tidak ditemukan. Coba lagi</string>
 </resources>

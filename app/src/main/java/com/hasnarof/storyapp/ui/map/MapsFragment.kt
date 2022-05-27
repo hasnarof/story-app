@@ -96,7 +96,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         stories.map {
             if(it.lat != null && it.lon != null) {
                 val position = LatLng(it.lat, it.lon)
-                mMap.addMarker(MarkerOptions().position(position).title(it.name))
+                mMap.addMarker(MarkerOptions().position(position).title("@${it.name}").snippet(it.description))
                 bounds.include(position)
             }
 

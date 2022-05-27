@@ -66,14 +66,29 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_take_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/take_location"
+        app:layout_constraintTop_toBottomOf="@id/til_description"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_upload"
+        android:layout_marginTop="20dp"
+        app:cornerRadius="15dp"
+        android:paddingHorizontal="40dp"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_upload"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/upload"
         app:layout_constraintTop_toBottomOf="@id/til_description"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/button_take_location"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="20dp"
+        android:layout_marginStart="15dp"
         app:cornerRadius="15dp"
         android:paddingHorizontal="40dp"
         />

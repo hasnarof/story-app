@@ -33,4 +33,7 @@
     <string name="camera_permission_granted">Camera permission has been granted</string>
     <string name="failed_showing_camera">Failed showing camera</string>
     <string name="fail_to_take_picture">Fail to take picture</string>
+    <string name="take_location">Take Location</string>
+    <string name="location_found">Location found</string>
+    <string name="location_not_found">Location is not found. Try Again</string>
 </resources>
